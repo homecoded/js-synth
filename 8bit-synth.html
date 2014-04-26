@@ -1,0 +1,102 @@
+
+<!doctype html>
+<html>
+<head>
+    <title>Demo of simple 8-Bit Synth</title>
+    <meta charset="utf-8" />
+    <style>
+        html, body { margin: 0; padding: 0; border: 0; }
+    </style>
+</head>
+<body>
+<script>
+    // start of submission //
+    var oFreq = {
+        c : 65.41,
+        d : 73.42,
+        e : 82.41,
+        f : 87.31,
+        g : 98,
+        a : 110,
+        h : 123.47,
+        C : 130.81,
+        D : 146.83,
+        E : 164.81,
+        F : 174.61,
+        G : 196,
+        A : 220,
+        H : 246.94,
+        ' ': 0
+    };
+
+    var oscSin = function (iFreq, t, iSampleRate) {
+        return 127 * Math.sin( 2 * Math.PI * iFreq * (t/iSampleRate));
+    };
+
+    var oscSaw = function (iFreq, t, iSampleRate) {
+        return  (t % (iSampleRate / iFreq)) * (255 / (iSampleRate / iFreq));
+    };
+
+    var oscSqr = function (iFreq, t, iSampleRate) {
+        return (Math.sin( 2 * Math.PI * iFreq * (t/iSampleRate)) > 0) ? -127 : 127;
+    };
+
+    var oscSweep1 = function (iFreq, t, iSampleRate) {
+        return 0.4 * oscSqr(iFreq, t, iSampleRate)
+               + 0.2 * (1+Math.sin(2*t/iSampleRate)) * oscSqr(iFreq * 3, t + 400*Math.sin( (t/iSampleRate)), iSampleRate)
+               + 0.3 * (1+Math.sin(t/iSampleRate)) * oscSqr(iFreq * 2, t, iSampleRate)
+        ;
+    }
+
+    var oscBase1 = function (iFreq, t, iSampleRate) {
+        return 0.4 * oscSqr(iFreq, t, iSampleRate)
+                + 0.3 * oscSaw(iFreq/2, t, iSampleRate)
+    }
+
+    var oscNze = function (iFreq, t, iSampleRate) {
+        return 128 - Math.random() * 255;
+    }
+
+    var sBasePattern =
+              'aAaAaAah'
+            + 'hHhHhHgf'
+            + 'fFfFfFfd'
+            + 'dDdDdDga'
+            ;
+
+    var sSweepPattern =
+              'aaaaaaah'
+            + 'hhhhhhgf'
+            + 'fffffffd'
+            + 'ddddddga'
+            ;
+
+    var sSynthPattern =
+              'eaCeaCea'
+            + 'dghdghdg'
+            + 'cfacfacf'
+            + 'dfadfadf'
+            ;
+
+    var softSynth = function(f) {
+        for(var t=0,S='RIFF_oO_WAVEfmt'+atob('IBAAAAABAAEARKwAAAAAAAABAAgAZGF0YU');++t<3e6;) {
+            var iBeat = 1 << 15;
+            var iSnare = 1<<16;
+            var iBass = 1<<14;
+            S+=String.fromCharCode(
+                    (Math.round(
+                         // base
+                          0.1 * oscSqr(oFreq[sBasePattern[(t>>14)&31]]/2, t, 44100)
+                          + 0.2 * oscSweep1(oFreq[sSweepPattern[(t>>14)&31]]*2, t, 44100)
+                          + 0.05 * oscSqr(oFreq[sSynthPattern[(t>>14)&31]]*2, t, 44100)
+                          + 0.01 * oscSin(120,t,44100) * (iBeat/(3*(t%iBeat)))
+                          + 0.1 * (iSnare/(9*((t+iSnare/2)%iSnare)))*oscNze(0, t, 44100)
+                    )+128) & 255
+            );
+        }
+        return S;
+    };
+    new Audio( 'data:audio/wav;base64,'+btoa( softSynth() ) ).play();
+</script>
+</body>
+</html>
