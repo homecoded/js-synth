@@ -12,20 +12,20 @@
 <script>
     // start of submission //
     var oFreq = {
-        c : 65.41,
-        d : 73.42,
-        e : 82.41,
-        f : 87.31,
-        g : 98,
-        a : 110,
-        h : 123.47,
-        C : 130.81,
-        D : 146.83,
-        E : 164.81,
-        F : 174.61,
-        G : 196,
-        A : 220,
-        H : 246.94,
+        'c' : 65.41,
+        'd' : 73.42,
+        'e' : 82.41,
+        'f' : 87.31,
+        'g' : 98,
+        'a' : 110,
+        'h' : 123.47,
+        'C' : 130.81,
+        'D' : 146.83,
+        'E' : 164.81,
+        'F' : 174.61,
+        'G' : 196,
+        'A' : 220,
+        'H' : 246.94,
         ' ': 0
     };
 
@@ -51,23 +51,22 @@
                + 0.2 * (1+Math.sin(2*t/iSampleRate)) * oscSqr(iFreq * 3, t + 400*Math.sin( (t/iSampleRate)), iSampleRate)
                + 0.3 * (1+Math.sin(t/iSampleRate)) * oscSqr(iFreq * 2, t, iSampleRate)
         ;
-    }
+    };
 
     var oscBase1 = function (iFreq, t, iSampleRate) {
         return 0.4 * oscSqr(iFreq, t, iSampleRate)
                 + 0.3 * oscSaw(iFreq/2, t, iSampleRate)
-    }
+    };
 
     var oscBase2 = function (iFreq, t, iSampleRate) {
         return 0.5 * oscRec(iFreq, t, iSampleRate, .5 + .45* Math.sin(t/4e6))
                 + 0.3 * oscRec(iFreq + 1, t, iSampleRate, .5 + .45* Math.sin(t/2e4))
                 + 0.2 * oscSaw(iFreq, t, iSampleRate)
-    }
-
+    };
 
     var oscNze = function (iFreq, t, iSampleRate) {
         return 128 - Math.random() * 255;
-    }
+    };
 
     var sBasePattern =
               'aAaAaAah'
@@ -90,7 +89,7 @@
             + 'dfadfadf'
             ;
 
-    var softSynth = function(f) {
+    var softSynth = function() {
         for(var t=0,S='RIFF_oO_WAVEfmt'+atob('IBAAAAABAAEARKwAAAAAAAABAAgAZGF0YU');++t<3e6;) {
             var iBeat = 1 << 16;
             var iSnare = 1<<16;
