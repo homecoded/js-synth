@@ -68,6 +68,41 @@
         return 128 - Math.random() * 255;
     };
 
+    var Envelope = function () {
+
+        // [iTimeMs, fVelocity [0..1]]
+        var aEnvelope = [],
+            iStartTime = 0
+        ;
+
+        return {
+            setEnvelope: function (aNewEnvelope) {
+                aEnvelope = aNewEnvelope;
+            },
+            start: function (iTime) {
+                iStartTime = iTime;
+            },
+            getVelocity: function (iTime) {
+                for (var i=0; i<aEnvelope.length; i+=2 ) {
+                    var iEnvelopeTime = iTime - iStartTime;
+                    if (aEnvelope[i] > iEnvelopeTime) {
+                        // this is the next data point in the envelope
+                        var iTargetVelocity = aEnvelope[i+1],
+                            iStartVelocity = aEnvelope[i-1],
+                            iSectionStartTime = aEnvelope[i-2],
+                            iSectionEndTime = aEnvelope[i],
+                            fPercentageInSection = (iEnvelopeTime-iSectionStartTime)/(iSectionEndTime - iSectionStartTime)
+                        ;
+                        return fPercentageInSection * (iTargetVelocity - iStartVelocity) + iStartVelocity
+                    }
+                }
+                // none found, return last entry
+                return aEnvelope[aEnvelope.length-1];
+            }
+
+        }
+    }
+
     var sBasePattern =
               'aAaAaAah'
             + 'hHhHhHgf'
@@ -89,17 +124,45 @@
             + 'dfadfadf'
             ;
 
+    var oEnvBase = Envelope();
+    oEnvBase.setEnvelope([
+        0, 0,         // sample index, value (between 0 and 1)
+        500, 1,
+        7000, 0.8,
+        8000, 0.2
+    ]);
+
+    var oEnvRythmSynth = Envelope();
+    oEnvRythmSynth.setEnvelope([
+        0, 0,         // sample index, value (between 0 and 1)
+        256, 1,
+        2048, 0.2,
+        3072, 0.6,
+        4000, 0.1
+    ]);
+
     var softSynth = function() {
         for(var t=0,S='RIFF_oO_WAVEfmt'+atob('IBAAAAABAAEARKwAAAAAAAABAAgAZGF0YU');++t<3e6;) {
             var iBeat = 1 << 16;
             var iSnare = 1<<16;
+
+            // restart the envelope every 1<<13 samples
+            if (1&t>>13) {
+                oEnvBase.start(t);
+            }
+
+            if (1&t>>12) {
+                oEnvRythmSynth.start(t)
+            }
+
             S+=String.fromCharCode(
                     (Math.round(
                          // base
-                          0.3 * oscBase2(oFreq[sBasePattern[(t>>14)&31]]/2, t, 44100)
+                          0.25 * oEnvBase.getVelocity(t) * oscBase2(oFreq[sBasePattern[(t>>14)&31]]/2, t, 44100)
+                          + 0.15 * oEnvRythmSynth.getVelocity(t) * oscSaw(oFreq[sBasePattern[(t>>14)&31]]*4, t, 44100)
                           + 0.2 * oscSweep1(oFreq[sSweepPattern[(t>>14)&31]]*2, t, 44100)
                           + 0.07 * oscRec(oFreq[sSynthPattern[(t>>14)&31]]*4, t, 44100, 0.5 + 0.45 * Math.sin(t/1e4))
-                          + 0.03 * oscRec(oFreq[sSynthPattern[(t>>14)&31]]*2, t, 44100, 0.5 + 0.45 * Math.sin(t/1e5))
+                          + 0.08 * oscRec(oFreq[sSynthPattern[(t>>14)&31]]*2, t, 44100, 0.5 + 0.45 * Math.sin(t/1e5))
                           + 0.01 * oscSin(80,t,44100) * (iBeat/(3*(t%iBeat)))
                           + 0.01 * (iSnare/(3*((t+iSnare/2)%iSnare)))*oscNze(0, t, 44100)
                     )+127) & 255
