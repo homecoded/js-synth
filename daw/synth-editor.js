@@ -10,25 +10,11 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
     // setup event handlers
     var oUpdateButton = document.getElementById('synthesizer-update');
     oUpdateButton.onclick = function () {
-
         var sFormula = oFormularTextarea.value;
-        var cFunction =  '';
-        eval('cFunction = function (t, f) { return ' + sFormula + '}');
-
         var iDuration = 1<<18;
         for (var i=0; i < Lazerbahn.notes.length; i++) {
-            console.log('make note', Lazerbahn.notes[i]);
             var iFreq = Lazerbahn.frequencies[Lazerbahn.notes[i]];
-            var sHeader = 'RIFF_oO_WAVEfmt'+atob('IBAAAAABAAEARKwAAAAAAAABAAgAZGF0YU');
-            for(var t=0,S = sHeader; ++t<iDuration; ) {
-                S+=String.fromCharCode(
-                    ( Math.round(
-                        cFunction(t, iFreq)
-                    ) +127 ) & 255
-                );
-            }
-            /** global Audio:false **/
-            oKeyAudios[Lazerbahn.notes[i]] = new Audio( 'data:audio/wav;base64,'+btoa( S ) );
+            oKeyAudios[Lazerbahn.notes[i]] = Lazerbahn.synth.calculate(sFormula, iFreq, iDuration);
         }
     };
 
@@ -52,6 +38,7 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
         79: 'd3',
         48: 'd#3',
         80: 'e3',
+        186: 'f3',
         89: 'c1',
         83: 'c#1',
         88: 'd1',
@@ -95,9 +82,16 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
 
     // sound presets
     var oPresets = {
-        'sin': '32 * Math.sin( 2 * Math.PI * f * (t/44100))',
-        'saw': '-32 + (t % (44100 / f)) * (664 / (44100 / f))',
-        'sqr': '(Math.sin( 2 * Math.PI * f * (t/44100)) > 0) ? -32 : 32'
+        'sin': '.3 * oscSin(f,t)',
+        'saw': '.3 * oscSaw(f,t)',
+        'sqr': '.3 * oscSqr(f,t)',
+        'rec': '.3 * oscRec(f,t, 0.5 + 0.3 * Math.sin(t/30000))',
+        'sweep': '0.1 * (1+Math.sin(2*t/SAMPLE_RATE)) * oscSqr(f * 2, t + 400*Math.sin( (t/SAMPLE_RATE)), SAMPLE_RATE)' +
+            '+ 0.15 * (1+Math.sin(0.5*t/SAMPLE_RATE)) * oscSqr(f , t, SAMPLE_RATE)' +
+            '+ 0.1 * oscSaw(f,t)',
+        'rich base': '0.2 * oscRec(f, t, .5 + .45* Math.sin(t/4e6)) ' +
+            '+ 0.2 * oscRec(f + 1, t, .5 + .45* Math.sin(t/2e4)) '  +
+            '+ 0.1 * oscSaw(f, t)'
     };
 
     // init select
