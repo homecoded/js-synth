@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+    <title>8-bit Digital Audio Workstation</title>
+    <meta charset="utf-8" />
+    <link href="style.css" rel="stylesheet">
+    <link href='http://fonts.googleapis.com/css?family=VT323' rel='stylesheet' type='text/css'>
+</head>
+<body>
+
+    <div class="screen synthesizer">
+        <div class="synth-box">
+            <h1>SYNTHESIZER EDITOR</h1>
+            <div class="block">
+                <select id="sound-select" class="sound-select">
+                    <option>choose sound...</option>
+                </select>
+                <input type="text" id="sound-name">
+                <input type="button" value="save">
+            </div>
+            <div class="block">
+                <textarea id="synthesizer-formula" cols="80" rows="10">insert formular here,
+    parameter t is sample index
+    parameter f is frequency
+                </textarea>
+                <input id="synthesizer-update" type="button" value="update">
+            </div>
+            <div class="block center">
+                Enter a formula and press update.<br/>
+                Use the keyboard to play and try your creation.
+                <pre>
+2 3   5 6 7   9 0             C#D#  F#G#A#  C#
+Q W E R T Z U I O P     =     C D E F G A H C D E</pre>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript" src="frequencies.js"></script>
+    <script type="text/javascript" src="synth-editor.js"></script>
+</body>
+</html>
