@@ -86,9 +86,9 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
         'saw': '.3 * oscSaw(f,t)',
         'sqr': '.3 * oscSqr(f,t)',
         'rec': '.3 * oscRec(f,t, 0.5 + 0.3 * Math.sin(t/30000))',
-        'sweep': '0.1 * (1+Math.sin(2*t/SAMPLE_RATE)) * oscSqr(f * 2, t + 400*Math.sin( (t/SAMPLE_RATE)), SAMPLE_RATE)' +
-            '+ 0.15 * (1+Math.sin(0.5*t/SAMPLE_RATE)) * oscSqr(f , t, SAMPLE_RATE)' +
-            '+ 0.1 * oscSaw(f,t)',
+        'sweep': '0.05 * (1+Math.sin(2*t/SAMPLE_RATE)) * oscRec(f * 2, t + 400*Math.sin( (t/SAMPLE_RATE)), 0.5 + .3*Math.sin(t/40000))\n' +
+            '+ 0.05 * (1+Math.sin(0.5*t/SAMPLE_RATE)) * oscSqr(2*f , t)\n'+
+            '+ 0.2 * oscSin(f*4,t)',
         'rich base': '0.2 * oscRec(f, t, .5 + .45* Math.sin(t/4e6)) ' +
             '+ 0.2 * oscRec(f + 1, t, .5 + .45* Math.sin(t/2e4)) '  +
             '+ 0.1 * oscSaw(f, t)'
