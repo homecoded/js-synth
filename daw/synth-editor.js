@@ -4,8 +4,9 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
 (function () {
 
     var oKeyAudios = {},
-        oFormularTextarea = document.getElementById('synthesizer-formula')
-        ;
+        oFormularTextarea = document.getElementById('synthesizer-formula'),
+        oEnvelopeTextarea = document.getElementById('envelope-editor')
+    ;
 
     // setup event handlers
     var oUpdateButton = document.getElementById('synthesizer-update');
@@ -14,7 +15,12 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
         var iDuration = 1<<18;
         for (var i=0; i < Lazerbahn.notes.length; i++) {
             var iFreq = Lazerbahn.frequencies[Lazerbahn.notes[i]];
-            oKeyAudios[Lazerbahn.notes[i]] = Lazerbahn.synth.calculate(sFormula, iFreq, iDuration);
+            oKeyAudios[Lazerbahn.notes[i]] = Lazerbahn.synth.calculate(
+                sFormula,
+                iFreq,
+                iDuration,
+                getEnvelope()
+            );
         }
     };
 
@@ -107,8 +113,21 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
         if (sNewFormula) {
             oFormularTextarea.value = sNewFormula;
         }
+    };
+
+    var getEnvelope = function (){
+        var sText = oEnvelopeTextarea.value,
+            aEnvelopeData = eval('[' + sText + ']'),
+            oEnvelope = Lazerbahn.Modules.Envelope()
+            ;
+        oEnvelope.setEnvelope(aEnvelopeData);
+        return oEnvelope;
+    };
+
+    Lazerbahn.synthEditor = {
+        getSounds : function () {
+            return oPresets;
+        }
     }
-
-
 
 })();

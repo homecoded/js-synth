@@ -25,6 +25,13 @@
                 </textarea>
                 <input id="synthesizer-update" type="button" value="update">
             </div>
+            <div class="block">
+                <textarea id="envelope-editor" cols="80" rows="10">
+0, 0,
+1e3, 1,
+1e4, 0
+                </textarea>
+            </div>
             <div class="block center">
                 Enter a formula and press update.<br/>
                 Use the keyboard to play and try your creation.
@@ -35,9 +42,39 @@ Q W E R T Z U I O P     =     C D E F G A H C D E</pre>
         </div>
     </div>
 
+    <div class="screen pattern-editor">
+        <div class="synth-box">
+            <h1>PATTERN EDITOR</h1>
+            <div class="block">
+                <div class="track">
+                    <select id="track-sound-select-1" class="track-sound-select">
+                    </select>
+                    <div class="track-data"></div>
+                </div>
+                <div class="track">
+                    <select id="track-sound-select-2" class="track-sound-select">
+                    </select>
+                    <div class="track-data"></div>
+                </div>
+                <div class="track">
+                    <select id="track-sound-select-3" class="track-sound-select">
+                    </select>
+                    <div class="track-data"></div>
+                </div>
+                <div class="track">
+                    <select id="track-sound-select-4" class="track-sound-select">
+                    </select>
+                    <div class="track-data"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
 
     <script type="text/javascript" src="frequencies.js"></script>
     <script type="text/javascript" src="synth.js"></script>
     <script type="text/javascript" src="synth-editor.js"></script>
+    <script type="text/javascript" src="envelope.js"></script>
+    <script type="text/javascript" src="track-editor.js"></script>
 </body>
 </html>

@@ -7,11 +7,11 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
     var SAMPLE_RATE = 44100;
 
     var oscSin = function (iFreq, t) {
-        return 127 * Math.sin( 2 * Math.PI * iFreq * (t/SAMPLE_RATE));
+        return 120 * Math.sin( 2 * Math.PI * iFreq * t / SAMPLE_RATE);
     };
 
     var oscSaw = function (iFreq, t) {
-        return  (t % (SAMPLE_RATE / iFreq)) * (255 / (SAMPLE_RATE / iFreq));
+        return  127 - (t % (SAMPLE_RATE / iFreq)) * (255 / (SAMPLE_RATE / iFreq));
     };
 
     var oscSqr = function (iFreq, t) {
@@ -29,15 +29,16 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
      * @param sFormula
      * @param iFreq
      * @param iDuration
+     * @param {Lazerbahn.Modules.Envelope} oEnvelope
      */
-    function calc(sFormula, iFreq, iDuration) {
+    function calc(sFormula, iFreq, iDuration, oEnvelope) {
         var cFunction =  '';
         eval('cFunction = function (t, f) { return ' + sFormula + '}');
         var sHeader = 'RIFF_oO_WAVEfmt'+atob('IBAAAAABAAEARKwAAAAAAAABAAgAZGF0YU');
         for(var t=0,S = sHeader; ++t<iDuration; ) {
             S+=String.fromCharCode(
                 ( Math.round(
-                    cFunction(t, iFreq)
+                    cFunction(t, iFreq) * oEnvelope.getVelocity(t)
                 ) +127 ) & 255
             );
         }

@@ -17,10 +17,6 @@ html, body {
     float: left;
 }
 
-.col-4 {
-    width: 33.333333%;
-}
-
 input[type=button] {
     padding: 0 5px;
 }
@@ -61,4 +57,35 @@ textarea {
     color: #2a2015;
 }
 
+/* pattern editor */
+.pattern-editor {
+    width: 1200px;
+    padding: 20px;
+    background-color: #406170;
+    color: #f1f2dc;
+    border: 5px solid #101b21;
+}
+
+.pattern-editor .block {
+    background-color: #cbdfee;
+    color: #2a2015;
+}
+
+.pattern-editor .track {
+    padding: 10px;
+    background-color: #aacce7;
+    display: inline-block;
+}
+
+.pattern-editor .track.selected {
+    background-color: #94adc6;
+}
+
+.pattern-editor .track-data {
+    margin-top: 10px;
+}
+
+.pattern-editor .number {
+    margin-right: 10px;
+}
 
