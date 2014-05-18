@@ -72,7 +72,6 @@ textarea {
 }
 
 .pattern-editor .track {
-    padding: 10px;
     background-color: #aacce7;
     display: inline-block;
 }
@@ -89,3 +88,10 @@ textarea {
     margin-right: 10px;
 }
 
+.pattern-editor .track-line {
+    padding: 0 10px;
+}
+
+.pattern-editor .track-line.selected {
+    background-color: #dafac8;
+}

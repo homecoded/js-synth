@@ -65,26 +65,25 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
 
 };
 
-    document.onkeyup = function(event) {
-        console.log(event.keyCode);
-        oLastEvent = null;
-        delete heldKeys[event.keyCode];
-        if (oKeyAudios[oKeyCodeToNoteMap[event.keyCode]]) {
-            oKeyAudios[oKeyCodeToNoteMap[event.keyCode]].pause();
-            oKeyAudios[oKeyCodeToNoteMap[event.keyCode]].currentTime = 0;
+    Lazerbahn.keyboard.onKeyRelease(
+        function(iKeyCode) {
+            oLastEvent = null;
+            if (oKeyAudios[oKeyCodeToNoteMap[iKeyCode]]) {
+                oKeyAudios[oKeyCodeToNoteMap[iKeyCode]].pause();
+                oKeyAudios[oKeyCodeToNoteMap[iKeyCode]].currentTime = 0;
+            }
         }
-    };
+    );
 
-    document.onkeydown = function(event) {
-        if (oLastEvent && oLastEvent.keyCode == event.keyCode) {
-            return;
+
+    Lazerbahn.keyboard.onKeyPress(
+        function(iKeyCode) {
+            heldKeys[iKeyCode] = true;
+            if (oKeyAudios[oKeyCodeToNoteMap[iKeyCode]]) {
+                oKeyAudios[oKeyCodeToNoteMap[iKeyCode]].play();
+            }
         }
-        oLastEvent = event;
-        heldKeys[event.keyCode] = true;
-        if (oKeyAudios[oKeyCodeToNoteMap[event.keyCode]]) {
-            oKeyAudios[oKeyCodeToNoteMap[event.keyCode]].play();
-        }
-    };
+    );
 
     // sound presets
     var oPresets = {
