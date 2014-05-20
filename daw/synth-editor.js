@@ -63,7 +63,8 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
        192: 'd#2',
        189: 'e2'
 
-};
+    };
+    Lazerbahn.keyToNoteMap = oKeyCodeToNoteMap;
 
     Lazerbahn.keyboard.onKeyRelease(
         function(iKeyCode) {

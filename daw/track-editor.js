@@ -63,10 +63,18 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
         }
     };
 
+    var nextLine = function () {
+        iSelectedLine++;
+        if (iSelectedLine >= TRACK_LENGTH) {
+            iSelectedLine = 0;
+        }
+        selectLine(iSelectedLine);
+    };
+
     for (i = 0; i < oTrackDatas.length; i++) {
         // render track data
         var sTrack = '';
-        for (var j = 1; j <= TRACK_LENGTH; j++){
+        for (var j = 0; j < TRACK_LENGTH; j++){
             sTrack += '<div class="track-line">' +
                 '<span class="number">' + ('0' + j).slice(-2) + '</span>' +
                 '<span class="data">' + '</span>' +
@@ -96,6 +104,8 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
         }
     }
 
+
+
     Lazerbahn.keyboard.onKeyPress(
         function (iKeyCode) {
             switch (iKeyCode) {
@@ -103,11 +113,7 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
                     if (iSelectedLine < 0) {
                         break;
                     }
-                    iSelectedLine++;
-                    if (iSelectedLine >= TRACK_LENGTH) {
-                        iSelectedLine = 0;
-                    }
-                    selectLine(iSelectedLine);
+                    nextLine();
                     break;
                 case Lazerbahn.keyboard.KEY_UP:
                     if (iSelectedLine < 0) {
@@ -141,6 +147,18 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
                     selectTrack(iSelectedTrack);
                     selectLine(iSelectedLine);
                     break;
+                default:
+                    if (Lazerbahn.keyToNoteMap[iKeyCode] || iKeyCode === Lazerbahn.keyboard.KEY_SPACE) {
+                        if (Lazerbahn.keyToNoteMap[iKeyCode]){
+                            aTrackContentData[iSelectedTrack][iSelectedLine] = Lazerbahn.keyToNoteMap[iKeyCode];
+                        } else {
+                            aTrackContentData[iSelectedTrack][iSelectedLine] = NO_DATA;
+                        }
+                        nextLine();
+                        renderData();
+                    }
+                    break;
+
             }
         }
     );
