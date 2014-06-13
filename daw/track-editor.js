@@ -7,7 +7,7 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
         oTracks = document.getElementsByClassName('track'),
         oSoundSelects = document.getElementsByClassName('track-sound-select'),
         oSounds = Lazerbahn.synthEditor.getSounds(),
-        TRACK_LENGTH = 64,
+        TRACK_LENGTH = 32,
         i,
         iSelectedTrack = -1,
         iSelectedLine = -1,
@@ -149,6 +149,9 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
                     break;
                 default:
                     if (Lazerbahn.keyToNoteMap[iKeyCode] || iKeyCode === Lazerbahn.keyboard.KEY_SPACE) {
+                        if (iSelectedTrack < 0 || iSelectedLine < 0) {
+                            break;
+                        }
                         if (Lazerbahn.keyToNoteMap[iKeyCode]){
                             aTrackContentData[iSelectedTrack][iSelectedLine] = Lazerbahn.keyToNoteMap[iKeyCode];
                         } else {
@@ -163,4 +166,30 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
         }
     );
     renderData();
+
+    Lazerbahn.trackEditor = {
+        /**
+         * Returns the track content, a two-dimensional array
+         * dimension 1 is the track id
+         * dimension 2 is the line id
+         *
+         * @returns {Array} track data
+         */
+        getTracks : function () {
+            return aTrackContentData;
+        },
+        /**
+         * Returns the instrument name for each track in an array
+         *
+         * @returns {Array} instrument names
+         */
+        getInstruments : function () {
+            var aInstruments = [];
+            for (var i = 0; i < oTracks.length; i++) {
+                var oSelect = oTracks[i].getElementsByClassName('track-sound-select')[0];
+                aInstruments.push(oSelect.value);
+            }
+            return aInstruments;
+        }
+    }
 })();
