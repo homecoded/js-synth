@@ -45,7 +45,7 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
     };
 
     var createClickListener = function (iTrackId, iTrackLineId) {
-        return function (oEvent) {
+        return function () {
             // mark the track
             selectTrack(iTrackId);
             // mark the track line

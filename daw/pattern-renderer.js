@@ -9,7 +9,7 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
             aTrackData = Lazerbahn.trackEditor.getTracks(),
             iQuarterNoteSamples = (44100 * 60) / 130 / 4,
             iTrackLength = aTrackData[0].length,
-            //iTrackLength = 2,
+            //iTrackLength = 3,
             iPatternLength = iQuarterNoteSamples * iTrackLength,
             aTrackRenderData = [],
             iNumTracks = aInstruments.length,
@@ -43,27 +43,31 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
                     oEnvelope = aCurrentTrackData.envelope
                 ;
 
-                if (
-                    typeof(fFreq) != 'undefined'
-                    && (
+                if (typeof(fFreq) != 'undefined'){
+                    if (
                         aCurrentTrackData.lastNote != fFreq
-                        || aCurrentTrackData.lastIndex != iIndex
-                        )
-
-                ) {
-                    aCurrentTrackData.lastNote = fFreq;
+                            || aCurrentTrackData.lastIndex != iIndex
+                        ) {
+                        aCurrentTrackData.lastNote = fFreq;
+                        aCurrentTrackData.t = 0;
+                    }
+                } else if (aTrackData[j][iIndex] == 'off') {
+                    aCurrentTrackData.lastNote = -1;
                     aCurrentTrackData.t = 0;
                 }
+
                 aCurrentTrackData.lastIndex = iIndex;
 
-                iValue += Lazerbahn.synth.calculatePatternStep(
-                    sFormula,
-                    aCurrentTrackData.lastNote,
-                    aCurrentTrackData.t,
-                    i,
-                    oPersistentData,
-                    oEnvelope
-                );
+                if (aCurrentTrackData.lastNote > 0) {
+                    iValue += Lazerbahn.synth.calculatePatternStep(
+                        sFormula,
+                        aCurrentTrackData.lastNote,
+                        aCurrentTrackData.t,
+                        i,
+                        oPersistentData,
+                        oEnvelope
+                    );
+                }
 
                 if (iMaxValue < iValue) {
                     iMaxValue = iValue;

@@ -111,11 +111,11 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
      * @param {Lazerbahn.Modules.Envelope} oEnvelope envelope object
      * @return {Number} sample data value
      */
-    function calcStep(sFormula, f, t, gt, d, oEnvelope) {
+function calcStep(sFormula, f, t, gt, d, oEnvelope) {
         var cFunction =  getSynthFunction(sFormula),
-            iValue = cFunction(f, t, gt, d) * oEnvelope.getVelocity(t) +.5| 0
+            iValue = cFunction(f, t, gt, d) * oEnvelope.getVelocity(t)
             ;
-        return Math.min(Math.max(-127, iValue), 127);
+        return Math.min(Math.max(-127, iValue +.5| 0), 127);
     }
 
     // external interface

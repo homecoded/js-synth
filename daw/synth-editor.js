@@ -61,7 +61,8 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
         76: 'c#2',
        190: 'd2',
        192: 'd#2',
-       189: 'e2'
+       189: 'e2',
+        65: 'off'
 
     };
     Lazerbahn.keyToNoteMap = oKeyCodeToNoteMap;
@@ -98,7 +99,7 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
         'rich base': {syn:'0.2*(0.2 * oscRec(f, t, .5 + .45* Math.sin(t/4e6)) ' +
             '+ 0.2 * oscRec(f + 1, t, .5 + .45* Math.sin(t/2e4)) '  +
             '+ 0.1 * oscSaw(f, t))' , env: '0,0,1e3,1,4e5,1,2e6,0'},
-        'basedrum' : {syn:'(.3 * oscSin(f/4, t%1e5) + .3 * oscSin(f/8 *Math.sin(1e5/(t%1e5)), t%1e5) + .05 * oscSqr(f/16* Math.sin(1e5/(t%1e5)), t%1e5))' , env: '0, 0, 3e2, 1, 1e3, .5, 4e3, 0'}
+        'basedrum' : {syn:'(.8 * oscSin(f/2, t%1e5) + .4 * oscSin(f/16 *Math.sin(1e5/(t%1e5)), t%1e5) + .1 * oscSqr(f/16* Math.sin(1e5/(t%1e5)), t%1e5))' , env: '0, 0, 3e2, 1, 1e3, .5, 2e3, 0'}
     };
 
     // init select
