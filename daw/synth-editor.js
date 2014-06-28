@@ -96,10 +96,11 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
         'sweep': {syn:'0.2*(0.05 * (1+Math.sin(2*t/SAMPLE_RATE)) * oscRec(f * 2, t + 400*Math.sin( (t/SAMPLE_RATE)), 0.5 + .3*Math.sin(t/40000))\n' +
             '+ 0.05 * (1+Math.sin(0.5*t/SAMPLE_RATE)) * oscSqr(2*f , t)\n'+
             '+ 0.2 * oscSin(f*4,t))' , env: '0,0,1e3,1,4e5,1,2e6,0'},
-        'rich base': {syn:'0.2*(0.2 * oscRec(f, t, .5 + .45* Math.sin(t/4e6)) ' +
+        'rich_base': {syn:'0.2*(0.2 * oscRec(f, t, .5 + .45* Math.sin(t/4e6)) ' +
             '+ 0.2 * oscRec(f + 1, t, .5 + .45* Math.sin(t/2e4)) '  +
             '+ 0.1 * oscSaw(f, t))' , env: '0,0,1e3,1,4e5,1,2e6,0'},
-        'basedrum' : {syn:'(.8 * oscSin(f/2, t%1e5) + .4 * oscSin(f/16 *Math.sin(1e5/(t%1e5)), t%1e5) + .1 * oscSqr(f/16* Math.sin(1e5/(t%1e5)), t%1e5))' , env: '0, 0, 3e2, 1, 1e3, .5, 2e3, 0'}
+        'basedrum' : {syn:'(.8 * oscSin(f/2, t%1e5) + .4 * oscSin(f/16 *Math.sin(1e5/(t%1e5)), t%1e5) + .1 * oscSqr(f/16* Math.sin(1e5/(t%1e5)), t%1e5))' , env: '0, 0, 3e2, 1, 1e3, .5, 2e3, 0'},
+        'sweep2' : {syn: '0.8 * INSTRUMENTS.sweep(f,t,gt,d) + 0.4 * INSTRUMENTS.sweep(f,t+30*sin(t/1e4),gt,d)', env: '0,0,300,1'}
     };
 
     // init select
@@ -107,6 +108,11 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
     for(var i in oPresets) {
         if (oPresets.hasOwnProperty(i)) {
             oSoundSelect.options[oSoundSelect.options.length] = new Option(i, i);
+            Lazerbahn.synth.addInstrument(
+                i,
+                oPresets[i].syn,
+                Lazerbahn.envelopeEditor.getEnvelope(oPresets[i].env)
+            );
         }
     }
 
