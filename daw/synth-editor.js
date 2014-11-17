@@ -5,8 +5,27 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
 
     var oKeyAudios = {},
         oFormularTextarea = document.getElementById('synthesizer-formula'),
-        oEnvelopeTextarea = document.getElementById('envelope-editor')
+        oEnvelopeTextarea = document.getElementById('envelope-editor'),
+        oSoundSelect = document.getElementById('sound-select'),
+        // sound presets
+        oInstruments = {
+            'sin': {syn:'.1 * oscSin(f,t)' , env: '0,0,1e4,1,4e5,1,2e6,0'},
+            'saw': {syn:'.1 * oscSaw(f,t)' , env: '0,0,1e4,1,4e5,1,2e6,0'},
+            'sqr': {syn:'.1 * oscSqr(f,t)' , env: '0,0,1e4,1,4e5,1,2e6,0'},
+            'rec': {syn:'.1 * oscRec(f,t, 0.5 + 0.3 * Math.sin(t/30000))' , env: '0,0,1e3,1,4e5,1,2e6,0'},
+            'sweep': {syn:'0.2*(0.05 * (1+Math.sin(2*t/SAMPLE_RATE)) * oscRec(f * 2, t + 400*Math.sin( (t/SAMPLE_RATE)), 0.5 + .3*Math.sin(t/40000))\n' +
+                '+ 0.05 * (1+Math.sin(0.5*t/SAMPLE_RATE)) * oscSqr(2*f , t)\n'+
+                '+ 0.2 * oscSin(f*4,t))' , env: '0,0,1e3,1,4e5,1,2e6,0'},
+            'rich_base': {syn:'0.2*(0.2 * oscRec(f, t, .5 + .45* Math.sin(t/4e6)) ' +
+                '+ 0.2 * oscRec(f + 1, t, .5 + .45* Math.sin(t/2e4)) '  +
+                '+ 0.1 * oscSaw(f, t))' , env: '0,0,1e3,1,4e5,1,2e6,0'},
+            'basedrum' : {syn:'(.8 * oscSin(f/2, t%1e5) + .4 * oscSin(f/16 *Math.sin(1e5/(t%1e5)), t%1e5) + .1 * oscSqr(f/16* Math.sin(1e5/(t%1e5)), t%1e5))' , env: '0, 0, 3e2, 1, 1e3, .5, 2e3, 0'},
+            'hihat': {syn:'.1 *(255*Math.random()-127)', env:'0,0,1e2,1,1e3,0'},
+            'snare': {syn:'.1*(255*Math.random()-127)+4* Math.sin(f*Math.PI*t/44100)*10000/gt', env:'0,0,1e2,1,2e4,0'},
+            'tom': {syn:'.1*oscSin(f,gt)', env:'0,0,1e2,1,2e4,0'}
+        }
     ;
+
 
     // setup event handlers
     var oUpdateButton = document.getElementById('synthesizer-update');
@@ -23,6 +42,16 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
             );
         }
     };
+
+    oFormularTextarea.onchange = function () {
+        var sCurrentSound = oSoundSelect.value;
+        oInstruments[sCurrentSound].syn = oFormularTextarea.value;
+    }
+
+    oEnvelopeTextarea.onchange = function () {
+        var sCurrentSound = oSoundSelect.value;
+        oInstruments[sCurrentSound].env = oEnvelopeTextarea.value;
+    }
 
     var oLastEvent;
     var heldKeys = {};
@@ -77,7 +106,6 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
         }
     );
 
-
     Lazerbahn.keyboard.onKeyPress(
         function(iKeyCode) {
             heldKeys[iKeyCode] = true;
@@ -87,48 +115,45 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
         }
     );
 
-    // sound presets
-    var oPresets = {
-        'sin': {syn:'.1 * oscSin(f,t)' , env: '0,0,1e4,1,4e5,1,2e6,0'},
-        'saw': {syn:'.1 * oscSaw(f,t)' , env: '0,0,1e4,1,4e5,1,2e6,0'},
-        'sqr': {syn:'.1 * oscSqr(f,t)' , env: '0,0,1e4,1,4e5,1,2e6,0'},
-        'rec': {syn:'.1 * oscRec(f,t, 0.5 + 0.3 * Math.sin(t/30000))' , env: '0,0,1e3,1,4e5,1,2e6,0'},
-        'sweep': {syn:'0.2*(0.05 * (1+Math.sin(2*t/SAMPLE_RATE)) * oscRec(f * 2, t + 400*Math.sin( (t/SAMPLE_RATE)), 0.5 + .3*Math.sin(t/40000))\n' +
-            '+ 0.05 * (1+Math.sin(0.5*t/SAMPLE_RATE)) * oscSqr(2*f , t)\n'+
-            '+ 0.2 * oscSin(f*4,t))' , env: '0,0,1e3,1,4e5,1,2e6,0'},
-        'rich_base': {syn:'0.2*(0.2 * oscRec(f, t, .5 + .45* Math.sin(t/4e6)) ' +
-            '+ 0.2 * oscRec(f + 1, t, .5 + .45* Math.sin(t/2e4)) '  +
-            '+ 0.1 * oscSaw(f, t))' , env: '0,0,1e3,1,4e5,1,2e6,0'},
-        'basedrum' : {syn:'(.8 * oscSin(f/2, t%1e5) + .4 * oscSin(f/16 *Math.sin(1e5/(t%1e5)), t%1e5) + .1 * oscSqr(f/16* Math.sin(1e5/(t%1e5)), t%1e5))' , env: '0, 0, 3e2, 1, 1e3, .5, 2e3, 0'},
-        'sweep2' : {syn: '0.8 * INSTRUMENTS.sweep(f,t,gt,d) + 0.4 * INSTRUMENTS.sweep(f,t+30*sin(t/1e4),gt,d)', env: '0,0,300,1'}
-    };
-
-    // init select
-    var oSoundSelect = document.getElementById('sound-select');
-    for(var i in oPresets) {
-        if (oPresets.hasOwnProperty(i)) {
-            oSoundSelect.options[oSoundSelect.options.length] = new Option(i, i);
-            Lazerbahn.synth.addInstrument(
-                i,
-                oPresets[i].syn,
-                Lazerbahn.envelopeEditor.getEnvelope(oPresets[i].env)
-            );
+    function updateSoundSelect() {
+        // init select
+        oSoundSelect.options.length = 0;
+        for(var i in oInstruments) {
+            if (oInstruments.hasOwnProperty(i)) {
+                oSoundSelect.options[oSoundSelect.options.length] = new Option(i, i);
+            }
         }
     }
 
-    oSoundSelect.onchange = function () {
-        var sNewFormula = oPresets[oSoundSelect.value].syn;
-        var sNewEnvelope = oPresets[oSoundSelect.value].env;
+    function updateInputFields() {
+        var sNewFormula = oInstruments[oSoundSelect.value].syn;
+        var sNewEnvelope = oInstruments[oSoundSelect.value].env;
         if (sNewFormula) {
             oFormularTextarea.value = sNewFormula;
             oEnvelopeTextarea.value = sNewEnvelope;
         }
+    }
+
+    oSoundSelect.onchange = function () {
+        updateInputFields();
     };
+
+    // init
+    updateSoundSelect();
+    updateInputFields();
 
     Lazerbahn.synthEditor = {
         getSounds : function () {
-            return oPresets;
+            return oInstruments;
+        },
+        setSound : function (oNewInstruments) {
+            oInstruments = oNewInstruments;
+            updateSoundSelect();
+            var sCurrentSound = oSoundSelect.value;
+            oFormularTextarea.value = oInstruments[sCurrentSound].syn;
+            oEnvelopeTextarea.value = oInstruments[sCurrentSound].env;
         }
+
     }
 
 })();

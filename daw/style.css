@@ -95,3 +95,12 @@ textarea {
 .pattern-editor .track-line.selected {
     background-color: #dafac8;
 }
+
+/* song editor */
+.song-editor {
+    width: 600px;
+    padding: 20px;
+    background-color: #4c7040;
+    color: #f1f2dc;
+    border: 5px solid #101b21;
+}

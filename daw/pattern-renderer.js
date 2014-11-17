@@ -3,13 +3,11 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
 
 (function () {
 
-    var oRenderSongButton = document.getElementById('renderSong');
-    oRenderSongButton.onclick = function () {
-        var aInstruments = Lazerbahn.trackEditor.getInstruments(),
-            aTrackData = Lazerbahn.trackEditor.getTracks(),
-            iQuarterNoteSamples = (44100 * 60) / 130 / 4,
+    function render(aPattern) {
+        var aInstruments = aPattern.instruments,
+            aTrackData = aPattern.tracks,
+            iQuarterNoteSamples = (44100 * 60) / 125 / 4,
             iTrackLength = aTrackData[0].length,
-            //iTrackLength = 3,
             iPatternLength = iQuarterNoteSamples * iTrackLength,
             aTrackRenderData = [],
             iNumTracks = aInstruments.length,
@@ -27,7 +25,7 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
             });
         }
 
-        var aBuffer = '';
+        var sBuffer = '';
         var iMaxValue = 0;
 
         for (i = 0; i < iPatternLength; i++) {
@@ -35,13 +33,13 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
                 iValue = 0;
 
             for (var j = 0; j < iNumTracks; j++) {
-                 // render buffer
+                // render buffer
                 var aCurrentTrackData = aTrackRenderData[j],
                     sFormula = aCurrentTrackData.synth,
                     fFreq = Lazerbahn.frequencies[aTrackData[j][iIndex]],
                     oPersistentData = aCurrentTrackData.persistentData,
                     oEnvelope = aCurrentTrackData.envelope
-                ;
+                    ;
 
                 if (typeof(fFreq) != 'undefined'){
                     if (
@@ -71,16 +69,17 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
 
                 if (iMaxValue < iValue) {
                     iMaxValue = iValue;
-                    console.log('new max', iMaxValue);
                 }
                 aCurrentTrackData.t++;
             }
 
-            aBuffer += String.fromCharCode((iValue+128) & 255);
+            sBuffer += String.fromCharCode((iValue+128) & 255);
         }
-        var oAudio = Lazerbahn.synth.buildAudio(aBuffer);
-        oAudio.play();
+        return sBuffer;
+    }
 
+    Lazerbahn.patternRenderer = {
+        render : render
     };
 
 })();

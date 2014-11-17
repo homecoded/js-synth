@@ -6,8 +6,6 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
 
     var SAMPLE_RATE = 44100;
     var oFormulas = {};
-    var INSTRUMENTS = {};
-    var ENVELOPES = {};
 
     /**
      * Basic sine wave oscillator
@@ -120,25 +118,11 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
         return Math.min(Math.max(-127, iValue +.5| 0), 127);
     }
 
-    /**
-     * Add a instrument to the instruments object. These function can then later be used within
-     * synth-formulas.
-     *
-     * @param {String} sName name of the preset
-     * @param {String} sFormula
-     */
-    function addInstrument(sName, sFormula, oEnvelope) {
-        INSTRUMENTS[sName] = getSynthFunction(sFormula);
-        ENVELOPES[sName] = oEnvelope;
-        console.log(INSTRUMENTS);
-    }
-
     // external interface
     Lazerbahn.synth = {
         calculate : calc,
         calculatePatternStep: calcStep,
-        buildAudio : build,
-        addInstrument: addInstrument
+        buildAudio : build
     }
 
 })();
