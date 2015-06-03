@@ -4,9 +4,13 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
 (function () {
 
     var oKeyAudios = {},
-        oFormularTextarea = document.getElementById('synthesizer-formula'),
+        oFormulaTextarea = document.getElementById('synthesizer-formula'),
         oEnvelopeTextarea = document.getElementById('envelope-editor'),
         oSoundSelect = document.getElementById('sound-select'),
+        oSoundNewButton = document.getElementById('sound-new'),
+        oSoundDeleteButton = document.getElementById('sound-new'),
+        oSoundNameInput = document.getElementById('sound-name'),
+        sCurrentEditSound = '',
         // sound presets
         oInstruments = {
             'sin': {syn:'.1 * oscSin(f,t)' , env: '0,0,1e4,1,4e5,1,2e6,0'},
@@ -30,7 +34,7 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
     // setup event handlers
     var oUpdateButton = document.getElementById('synthesizer-update');
     oUpdateButton.onclick = function () {
-        var sFormula = oFormularTextarea.value;
+        var sFormula = oFormulaTextarea.value;
         var iDuration = 1<<16;
         for (var i=0; i < Lazerbahn.notes.length; i++) {
             var fFreq = Lazerbahn.frequencies[Lazerbahn.notes[i]];
@@ -43,9 +47,9 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
         }
     };
 
-    oFormularTextarea.onchange = function () {
+    oFormulaTextarea.onchange = function () {
         var sCurrentSound = oSoundSelect.value;
-        oInstruments[sCurrentSound].syn = oFormularTextarea.value;
+        oInstruments[sCurrentSound].syn = oFormulaTextarea.value;
     }
 
     oEnvelopeTextarea.onchange = function () {
@@ -123,19 +127,58 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
                 oSoundSelect.options[oSoundSelect.options.length] = new Option(i, i);
             }
         }
+        oSoundSelect.onchange();
     }
 
     function updateInputFields() {
         var sNewFormula = oInstruments[oSoundSelect.value].syn;
         var sNewEnvelope = oInstruments[oSoundSelect.value].env;
         if (sNewFormula) {
-            oFormularTextarea.value = sNewFormula;
+            oFormulaTextarea.value = sNewFormula;
             oEnvelopeTextarea.value = sNewEnvelope;
         }
     }
 
     oSoundSelect.onchange = function () {
         updateInputFields();
+        sCurrentEditSound = oSoundSelect.value;
+        oSoundNameInput.value = oSoundSelect.value;
+    };
+
+    oSoundNameInput.onchange = function () {
+        if (oSoundNameInput.value != sCurrentEditSound) {
+            var oInstrument = oInstruments[sCurrentEditSound];
+            if (oInstruments[oSoundNameInput.value]) {
+                alert('Synth with this name already exists: ' + oSoundNameInput.value);
+                return;
+            }
+            oInstruments[oSoundNameInput.value] = oInstrument;
+            delete oInstruments[sCurrentEditSound];
+            updateSoundSelect();
+            oSoundSelect.value = oSoundNameInput.value;
+            Lazerbahn.trackEditor.updateSoundSelect();
+        }
+    };
+
+    function clear() {
+        oInstruments = {};
+        updateSoundSelect();
+        oFormulaTextarea.value = '';
+        oEnvelopeTextarea.value = '';
+    }
+
+    oSoundNewButton.onclick = function () {
+        var sSound = 'sound',
+            i = 0;
+        while(oInstruments[sSound+i]);
+        oInstruments[sSound+i] = {
+            syn: '.2*oscSin(f,t)',
+            env: '0,0,1000,1,5000,0'
+        };
+        updateSoundSelect();
+        oSoundSelect.value = sSound + i;
+        updateInputFields();
+        Lazerbahn.trackEditor.updateSoundSelect();
     };
 
     // init
@@ -150,10 +193,10 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
             oInstruments = oNewInstruments;
             updateSoundSelect();
             var sCurrentSound = oSoundSelect.value;
-            oFormularTextarea.value = oInstruments[sCurrentSound].syn;
+            oFormulaTextarea.value = oInstruments[sCurrentSound].syn;
             oEnvelopeTextarea.value = oInstruments[sCurrentSound].env;
-        }
-
+        },
+        clear : clear
     }
 
 })();

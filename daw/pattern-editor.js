@@ -21,7 +21,7 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
     }
 
     function updatePatternSelect() {
-        oPatternSelect.options = [];
+        oPatternSelect.options.length = 0;
         for (var i = 0; i < aPatterns.length; i++) {
             oPatternSelect.options[i] = new Option(aPatterns[i].name, aPatterns[i].name);
         }
@@ -62,6 +62,14 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
     function loadPatternData() {
         oPatternName.value = aPatterns[iCurrentPattern].name;
         Lazerbahn.trackEditor.update(aPatterns[iCurrentPattern].instruments, aPatterns[iCurrentPattern].tracks)
+    }
+
+    function clear() {
+        iCurrentPattern = -1;
+        aPatterns = [];
+        newPattern();
+        savePattern();
+        updatePatternSelect();
     }
 
     oNewPatternButton.onclick = function () {
@@ -108,9 +116,7 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
     };
 
     // create first empty pattern
-    newPattern();
-    savePattern();
-    updatePatternSelect();
+    clear();
 
     Lazerbahn.patternEditor = {
         getPatternList: function () {
@@ -122,7 +128,9 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
             loadPatternData();
         },
         getPattern: getPattern,
-        save : savePattern
+        save: savePattern,
+        clear: clear,
+        updatePatternSelect: updatePatternSelect
     }
 
 })();

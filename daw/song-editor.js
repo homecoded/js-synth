@@ -8,6 +8,7 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
         oPlaySongButton = document.getElementById('playSong'),
         oSaveSongButton = document.getElementById('saveSong'),
         oLoadSongButton = document.getElementById('loadSong'),
+        oNewSongButton = document.getElementById('newSong'),
         aPatternList = []
     ;
     oSongEditorLineTemplate.remove();
@@ -21,6 +22,12 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
         } else {
             aPatternList.splice(iId, 0, aPatterns[0]);
         }
+    }
+
+    function clear() {
+        aPatternList = [];
+        addNewLineAt(-1);
+        updateSongList();
     }
 
     function updateSongList() {
@@ -126,15 +133,23 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
         updateSongList();
     }
 
-    addNewLineAt(-1);
-    updateSongList();
+    oNewSongButton.onclick = function () {
+        Lazerbahn.patternEditor.clear();
+        Lazerbahn.trackEditor.clear();
+        Lazerbahn.songEditor.clear();
+        Lazerbahn.synthEditor.clear();
+
+    };
+
+    clear();
 
     setTimeout(function () {
         oLoadSongButton.click();
     }, 100);
 
     Lazerbahn.songEditor = {
-        updateSongList: updateSongList
+        updateSongList: updateSongList,
+        clear: clear
     }
 
 })();

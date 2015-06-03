@@ -97,15 +97,23 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
         }
     }
 
-    init();
-
-    for (i = 0; i < oSoundSelects.length; i++) {
-        for (var sSoundName in oSounds) {
-            if (oSounds.hasOwnProperty(sSoundName)) {
-                oSoundSelects[i].options[oSoundSelects[i].options.length] = new Option(sSoundName, sSoundName);
+    function updateSoundSelect() {
+        oSounds = Lazerbahn.synthEditor.getSounds();
+        for (var i = 0; i < oSoundSelects.length; i++) {
+            var sValue = oSoundSelects[i].value;
+            oSoundSelects[i].options.length = 0;
+            for (var sSoundName in oSounds) {
+                if (oSounds.hasOwnProperty(sSoundName)) {
+                    oSoundSelects[i].options[oSoundSelects[i].options.length] = new Option(sSoundName, sSoundName);
+                }
             }
+            oSoundSelects[i].value = sValue;
         }
     }
+
+    init();
+    updateSoundSelect();
+
 
     Lazerbahn.keyboard.onKeyPress(
         function (iKeyCode) {
@@ -212,6 +220,10 @@ var Lazerbahn = Lazerbahn ? Lazerbahn : {};
         clear: function () {
             init();
             renderData();
+        },
+
+        updateSoundSelect: function () {
+            updateSoundSelect();
         },
 
         update: function (aInstruments, aTrackData) {
